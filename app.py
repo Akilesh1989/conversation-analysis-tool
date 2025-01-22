@@ -8,11 +8,45 @@ import pandas as pd
 from sentiment_analysis.predict import predict_single_text
 from summarization.summarizer import summarize_text
 from sentiment_analysis.report_generator import show_sentiment_report
+import hmac
+
+# Load environment variables
+dotenv.load_dotenv()
+
+def check_password():
+    """Returns `True` if the user had the correct password."""
+
+    def password_entered():
+        """Checks whether a password entered by the user is correct."""
+        if hmac.compare_digest(st.session_state["username"], os.environ.get("STREAMLIT_USERNAME", "")) and \
+           hmac.compare_digest(st.session_state["password"], os.environ.get("STREAMLIT_PASSWORD", "")):
+            st.session_state["password_correct"] = True
+            del st.session_state["password"]  # Don't store password
+            del st.session_state["username"]  # Don't store username
+        else:
+            st.session_state["password_correct"] = False
+
+    if "password_correct" not in st.session_state:
+        # First run, show inputs for username + password.
+        st.text_input("Username", key="username")
+        st.text_input("Password", type="password", key="password")
+        st.button("Login", on_click=password_entered)
+        return False
+    elif not st.session_state["password_correct"]:
+        # Password not correct, show input + error.
+        st.text_input("Username", key="username")
+        st.text_input("Password", type="password", key="password")
+        st.button("Login", on_click=password_entered)
+        st.error("😕 User not known or password incorrect")
+        return False
+    else:
+        # Password correct.
+        return True
 
 # Set page config - must be the first Streamlit command
 st.set_page_config(
     page_title="Conversation Analysis Tool",
-    page_icon="��",
+    page_icon="💬",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -62,13 +96,13 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Load environment variables
-dotenv.load_dotenv()
-
 # Initialize constants
 MODELS_DIR = os.path.join(os.path.dirname(__file__), "q_and_a", "FAISS_MODELS")
 
 def main():
+    if not check_password():
+        st.stop()  # Do not continue if check_password is not True.
+        
     # Header with gradient background
     st.markdown("""
         <div style='background: linear-gradient(to right, #1E88E5, #4CAF50); padding: 2rem; border-radius: 10px; margin-bottom: 2rem;'>
