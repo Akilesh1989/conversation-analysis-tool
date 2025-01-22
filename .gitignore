@@ -1,0 +1,12 @@
+.env
+__pycache__/
+process.md
+tata_punch_manual.pdf
+who_are_my_clients.md
+using_faiss.py
+extracted_text.txt
+interview_project.egg-info/
+topical_chat.csv
+todo.md
+*.pyc
+.dockerenv
