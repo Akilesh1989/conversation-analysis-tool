@@ -31,6 +31,8 @@ RUN mkdir -p q_and_a/FAISS_MODELS summarization/output
 ENV PYTHONPATH=/app
 ENV NLTK_DATA=/app/nltk_data
 
+RUN pip install -e .
+
 # Expose Streamlit port
 EXPOSE 8501
 
