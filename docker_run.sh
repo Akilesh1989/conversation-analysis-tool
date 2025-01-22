@@ -7,3 +7,6 @@ docker build -t conversation:latest . --platform linux/arm64/v8
 docker run -p 8501:8501 \
     --env-file .dockerenv \
     conversation:latest
+
+
+docker run -it conversation:latest /bin/bash
